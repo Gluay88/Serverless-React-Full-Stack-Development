@@ -1,5 +1,22 @@
 import React from "react";
+import {
+  StyledGame,
+  StyledScore,
+  StyledTimer,
+  StyledCharactor,
+} from "../styled/Game";
+import { Strong } from "../styled/Random";
 
 export default function Game() {
-  return <div>Game</div>;
+  return (
+    <StyledGame>
+      <StyledScore>
+        Score: <Strong>0</Strong>
+      </StyledScore>
+      <StyledCharactor>A</StyledCharactor>
+      <StyledTimer>
+        Time: <Strong>00: 000</Strong>
+      </StyledTimer>
+    </StyledGame>
+  );
 }
