@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   StyledGame,
@@ -10,13 +10,18 @@ import { Strong } from "../styled/Random";
 
 export default function Game() {
   const [score, setScore] = useState(0);
-  const MAX_SECONDS = 90;
+  const MAX_SECONDS = 50;
+  const characters =
+    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789`1234567890-=~!@#$%^&*()_+[]\\{}|;':\",./<>?ajodfueptjugogerfjdpfdf80845888";
+
+  const [currentCharacter, setCurrentCharacter] = useState("");
   const [ms, setMs] = useState(0);
   const [seconds, setSeconds] = useState(MAX_SECONDS);
 
   const navigate = useNavigate();
 
   useEffect(() => {
+    setRandomCharacter();
     const currentTime = new Date();
     const interval = setInterval(() => updateTime(currentTime), 1);
     return () => clearInterval(interval);
@@ -46,27 +51,44 @@ export default function Game() {
 
   useEffect(() => {
     if (seconds <= -1) {
+      // Todo: save the score
       navigate("/gameOver");
     }
   }, [seconds, ms, navigate]);
 
-  const keyUpHandler = (e) => {
-    console.log(e.key);
-  };
+  const keyUpHandler = useCallback(
+    (e) => {
+      console.log(e.key);
+      if (e.key === currentCharacter) {
+        setScore((prevScore) => prevScore + 1);
+      } else {
+        if (score > 0) {
+          setScore((prevScore) => prevScore - 1);
+        }
+      }
+      setRandomCharacter();
+    },
+    [currentCharacter]
+  );
 
   useEffect(() => {
     document.addEventListener("keyup", keyUpHandler);
     return () => {
       document.removeEventListener("keyup", keyUpHandler);
     };
-  }, []);
+  }, [keyUpHandler]);
+
+  const setRandomCharacter = () => {
+    const randomInt = Math.floor(Math.random() * 36);
+    setCurrentCharacter(characters[randomInt]);
+  };
 
   return (
     <StyledGame>
       <StyledScore>
         Score: <Strong>{score}</Strong>
       </StyledScore>
-      <StyledCharactor>A</StyledCharactor>
+      <StyledCharactor>{currentCharacter}</StyledCharactor>
       <StyledTimer>
         Time:{" "}
         <Strong>
